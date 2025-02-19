@@ -12,12 +12,7 @@ SECRET_KEY = 'your-existing-secret-key'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = [
-    '*.render.com', 
-    'your-app-name.onrender.com',
-    'localhost',
-    '127.0.0.1'
-]
+ALLOWED_HOSTS = ['.onrender.com', 'localhost', '127.0.0.1']
 
 # Application definition
 INSTALLED_APPS = [
@@ -27,13 +22,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # Buraya kendi uygulamalarınızı ekleyin
-    'your_app_name',  # Örnek: 'blog', 'users' gibi
+    'myapp',  # Uygulamanızı ekleyin
+    'whitenoise.runserver_nostatic',  # whitenoise ekleyin
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # WhiteNoise için ekledik
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # Bu satırı ekleyin
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -66,10 +61,8 @@ WSGI_APPLICATION = 'your_project.wsgi.application'
 
 # Database - Önce SQLite kullanın, daha sonra Render'da PostgreSQL'e geçiş yapacağız
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(default='sqlite:///db.sqlite3', conn_max_age=600)
+}
 }
 
 # Password validation
