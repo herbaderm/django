@@ -5,7 +5,7 @@ import dj_database_url
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-your-secret-key')
-DEBUG = os.getenv('DJANGO_DEBUG', 'False') == 'True'
+DEBUG = True
 
 ALLOWED_HOSTS = [
     'django-gvwo.onrender.com',
@@ -56,21 +56,15 @@ TEMPLATES = [
 WSGI_APPLICATION = 'myproject.wsgi.application'
 
 # Database Configuration
-if os.getenv('DATABASE_URL'):
+DATABASE_URL = 'postgresql://django_ep6x_user:fN10vKrxD7YqiaEqtjBNDNWfzyRZCsWJ@dpg-cuqpigtumphs73euheo0-a.frankfurt-postgres.render.com/django_ep6x'
+
 DATABASES = {
     'default': dj_database_url.config(
-        default='postgresql://django_ep6x_user:fN10vKrxD7YqiaEqtjBNDNWfzyRZCsWJ@dpg-cuqpigtumphs73euheo0-a.frankfurt-postgres.render.com/django_ep6x',
+        default=DATABASE_URL,
         conn_max_age=600,
         conn_health_checks=True,
     )
 }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
-    }
 
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
@@ -102,13 +96,19 @@ LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'login'
 
 # Security
-SESSION_COOKIE_AGE = 86400  # 1 gün
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
-SECURE_SSL_REDIRECT = True
-SECURE_HSTS_SECONDS = 31536000
-SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-SECURE_HSTS_PRELOAD = True
+if not DEBUG:  # Sadece production ortamında güvenlik ayarlarını etkinleştir
+    SESSION_COOKIE_AGE = 86400  # 1 gün
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_SSL_REDIRECT = True
+    SECURE_HSTS_SECONDS = 31536000
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+else:
+    # Development ortamında güvenlik ayarlarını devre dışı bırak
+    SESSION_COOKIE_SECURE = False
+    CSRF_COOKIE_SECURE = False
+    SECURE_SSL_REDIRECT = False
 
 # Email (Development Mode)
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
