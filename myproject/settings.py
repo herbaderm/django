@@ -60,9 +60,8 @@ DATABASE_URL = 'postgresql://django_ep6x_user:fN10vKrxD7YqiaEqtjBNDNWfzyRZCsWJ@d
 
 DATABASES = {
     'default': dj_database_url.config(
-        default=DATABASE_URL,
+        default='postgresql://django_ep6x_user:fN10vKrxD7YqiaEqtjBNDNWfzyRZCsWJ@dpg-cuqpigtumphs73euheo0-a.frankfurt-postgres.render.com/django_ep6x',
         conn_max_age=600,
-        conn_health_checks=True,
     )
 }
 
