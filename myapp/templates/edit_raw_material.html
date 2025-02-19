@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hammaddeleri Düzenle</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f6f9;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #007bff;
+            margin-bottom: 40px;
+            font-size: 2.5rem;
+        }
+
+        form {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            font-size: 1rem;
+            color: #333;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="date"] {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .back-link {
+            display: block;
+            margin-top: 30px;
+            text-align: center;
+            text-decoration: none;
+            color: #007bff;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .form-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 60px;
+            padding: 20px 0;
+            background-color: #343a40;
+            color: white;
+            font-size: 1rem;
+        }
+
+        /* Kullanıcı Bilgisi */
+        .user-info {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .user-info h2 {
+            font-size: 1.5rem;
+            color: #007bff;
+        }
+
+        .user-info a {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #f44336;
+            color: white;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            text-decoration: none;
+            margin-top: 15px;
+        }
+
+        .user-info a:hover {
+            background-color: #d32f2f;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Hammaddeleri Düzenle</h1>
+
+        <!-- Düzenleme Formu -->
+        <form method="POST">
+            <div class="form-container">
+                <div class="form-group">
+                    <label for="entry_date">Giriş Tarihi:</label>
+                    <input type="date" id="entry_date" name="entry_date" value="{{ material.entry_date }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="stock_code">Stok Kodu:</label>
+                    <input type="text" id="stock_code" name="stock_code" value="{{ material.stock_code }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="material_name">Hammadde Adı:</label>
+                    <input type="text" id="material_name" name="material_name" value="{{ material.material_name }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="inc">İnci:</label>
+                    <input type="text" id="inc" name="inc" value="{{ material.inc }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="quantity">Miktar:</label>
+                    <input type="number" id="quantity" name="quantity" value="{{ material.quantity }}" required>
+                </div>
+
+                <button type="submit">Kaydet</button>
+            </div>
+        </form>
+
+        <!-- Geri Dönme Linki -->
+        <a href="/" class="back-link">Ana Sayfaya Dön</a>
+    </div>
+
+    <footer>
+        © 2025 Tüm Hakları Saklıdır.
+    </footer>
+
+</body>
+</html>

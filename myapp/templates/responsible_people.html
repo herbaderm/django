@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sorumlu Kişiler</title>
+    <style>
+        /* Mevcut stiller aynı kalacak */
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #e9f1f7;
+            color: #333;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 30px;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: #007bff;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            font-size: 16px;
+            color: #007bff;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            background: #f0f8ff;
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 16px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .user-info {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .user-info span {
+            padding: 5px 10px;
+            background: #e3f2fd;
+            border-radius: 4px;
+        }
+
+        .action-links a {
+            text-decoration: none;
+            font-weight: bold;
+            color: #dc3545;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .action-links a:hover {
+            background-color: #fde3e3;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            border-radius: 8px;
+            width: 80%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .modal-buttons {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .modal-buttons button {
+            width: auto;
+            min-width: 120px;
+        }
+
+        .modal-buttons .confirm {
+            background-color: #dc3545;
+        }
+
+        .modal-buttons .cancel {
+            background-color: #6c757d;
+        }
+
+        .hidden-form {
+            display: none;
+        }
+
+        .messages {
+            margin-bottom: 20px;
+        }
+
+        .message {
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 6px;
+            text-align: center;
+            animation: fadeIn 0.5s;
+        }
+
+        .message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .home-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+
+        .home-link:hover {
+            color: #0056b3;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsive tasarım için ek stiller */
+        @media (max-width: 768px) {
+            .container {
+                width: 95%;
+                padding: 15px;
+            }
+
+            .user-info {
+                flex-direction: column;
+                gap: 5px;
+            }
+
+            li {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .action-links {
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Sorumlu Kişiler</h1>
+
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+                <div class="message {{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Kullanıcı Ekleme Formu -->
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="name">Ad Soyad:</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="username">Kullanıcı Adı:</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Şifre:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+
+            <button type="submit">Kullanıcı Ekle</button>
+        </form>
+
+        <!-- Kullanıcı Listesi -->
+        <h2>Mevcut Kullanıcılar</h2>
+        <ul>
+            {% for person in people %}
+                <li>
+                    <div class="user-info">
+                        <span>{{ person.name }}</span>
+                        {% if person.user %}
+                            <span>({{ person.user.username }})</span>
+                        {% endif %}
+                    </div>
+                    <div class="action-links">
+                        <a href="#" class="delete-link" data-person-id="{{ person.id }}">Sil</a>
+                        <form id="delete-form-{{ person.id }}" action="{% url 'delete_person' person.id %}" method="post" class="hidden-form">
+                            {% csrf_token %}
+                        </form>
+                    </div>
+                </li>
+            {% empty %}
+                <li style="text-align: center;">Henüz kullanıcı eklenmemiş.</li>
+            {% endfor %}
+        </ul>
+
+        <a href="/" class="home-link">Ana Sayfaya Dön</a>
+    </div>
+
+    <!-- Silme Onay Modalı -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+            <p>Bu kullanıcıyı silmek istediğinize emin misiniz?</p>
+            <div class="modal-buttons">
+                <button class="confirm">Evet, Sil</button>
+                <button class="cancel">İptal</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Modal işlemleri
+        const modal = document.getElementById('deleteModal');
+        const deleteLinks = document.querySelectorAll('.delete-link');
+        let currentForm = null;
+
+        // Sil linklerine tıklama olayı
+        deleteLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const personId = this.getAttribute('data-person-id');
+                currentForm = document.getElementById(`delete-form-${personId}`);
+                modal.style.display = 'block';
+            });
+        });
+
+        // Modal butonları
+        document.querySelector('.modal-buttons .confirm').addEventListener('click', function() {
+            if (currentForm) {
+                currentForm.submit();
+            }
+        });
+
+        document.querySelector('.modal-buttons .cancel').addEventListener('click', function() {
+            modal.style.display = 'none';
+            currentForm = null;
+        });
+
+        // Modal dışına tıklama
+        window.addEventListener('click', function(event) {
+            if (event.target === modal) {
+                modal.style.display = 'none';
+                currentForm = null;
+            }
+        });
+
+        // Mesajları otomatik gizle
+        setTimeout(function() {
+            const messages = document.querySelectorAll('.message');
+            messages.forEach(message => {
+                message.style.opacity = '0';
+                message.style.transform = 'translateY(-10px)';
+                message.style.transition = 'all 0.5s ease';
+                setTimeout(() => message.style.display = 'none', 500);
+            });
+        }, 5000);
+    </script>
+</body>
+</html>

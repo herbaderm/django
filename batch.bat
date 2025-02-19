@@ -1,0 +1,1 @@
+"C:\myproject\manage.py" runserver

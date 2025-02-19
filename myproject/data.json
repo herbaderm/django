@@ -1,0 +1,96 @@
+{
+    "responsible_people": [
+        "Gubse ATALAY",
+        "G\u00f6zde G\u00dc\u00c7L\u00dc",
+        "Planlanan"
+    ],
+    "raw_materials": [
+        {
+            "entry_date": "2025-02-08",
+            "stock_code": "123123",
+            "material_name": "412323",
+            "inc": "12312",
+            "quantity": "21312"
+        },
+        {
+            "entry_date": "2025-02-08",
+            "stock_code": "123123",
+            "material_name": "412323",
+            "inc": "12312",
+            "quantity": "21312"
+        },
+        {
+            "entry_date": "2025-02-08",
+            "stock_code": "123123",
+            "material_name": "412323",
+            "inc": "12312",
+            "quantity": "21312"
+        },
+        {
+            "entry_date": "2025-02-08",
+            "stock_code": "123123",
+            "material_name": "412323",
+            "inc": "12312",
+            "quantity": "21312"
+        }
+    ],
+    "product_types": [
+        {
+            "code": "01",
+            "name": "Hello Clean"
+        },
+        {
+            "code": "02",
+            "name": "Serumlar"
+        },
+        {
+            "code": "03",
+            "name": "Leke Kremleri"
+        }
+    ],
+    "projects": [
+        {
+            "start_date": "2025-02-04",
+            "project_no": "01",
+            "project_name": "el kremi",
+            "recipe_code": "01",
+            "recipe_name": "El kremi \u00e7al\u0131\u015fmas\u0131",
+            "responsible_person": "G\u00f6zde G\u00dc\u00c7L\u00dc",
+            "notes": ""
+        },
+        {
+            "start_date": "2025-02-14",
+            "project_no": "22",
+            "project_name": "Hello Clean",
+            "recipe_code": "11",
+            "recipe_name": "Slikonsuz",
+            "responsible_person": "Gubse ATALAY",
+            "notes": ""
+        }
+    ],
+    "archived_projects": [],
+    "recipes": [
+        {
+            "project_code": "02",
+            "project_name": "SERUM",
+            "recipe_code": "01",
+            "recipe_name": "C V\u0130TAM\u0130N\u0130 SERUM",
+            "date": "2025-01-27",
+            "responsible": "Gubse ATALAY",
+            "product_type": "03",
+            "result": "BA\u015eARILI",
+            "notes": "Yogunla\u015fmad\u0131"
+        },
+        {
+            "project_code": "02",
+            "project_name": "SERUM",
+            "recipe_code": "02",
+            "recipe_name": "C V\u0130TAM\u0130N\u0130 SERUM",
+            "date": "2025-01-27",
+            "responsible": "Gubse ATALAY",
+            "product_type": "03",
+            "result": "BA\u015eARILI",
+            "notes": "renkde bozulma"
+        }
+    ]
+}

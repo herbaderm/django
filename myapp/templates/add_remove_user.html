@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kullanıcı Ekleme</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 50px;
+            color: #4CAF50;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 30px;
+        }
+
+        label {
+            margin: 10px 0 5px;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            padding: 10px;
+            width: 300px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .user-list {
+            margin-top: 50px;
+            width: 80%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .user-list table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .user-list th, .user-list td {
+            padding: 15px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        .user-list th {
+            background-color: #007BFF;
+            color: white;
+        }
+
+        .user-list td {
+            background-color: #fff;
+        }
+
+        .user-list tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .user-list td a {
+            color: #FF6347;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .user-list td a:hover {
+            text-decoration: underline;
+        }
+
+        .back-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            display: block;
+            width: 200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .back-button:hover {
+            background-color: #0056b3;
+        }
+
+        .success-message {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            border-radius: 5px;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+
+        /* Modal stilleri */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 30%;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .delete-button {
+            color: #FF6347;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .delete-button:hover {
+            text-decoration: underline;
+        }
+
+        .modal-buttons {
+            margin-top: 20px;
+        }
+
+        .modal-buttons button {
+            margin: 0 10px;
+        }
+
+        .yes-button {
+            background-color: #dc3545;
+        }
+
+        .yes-button:hover {
+            background-color: #c82333;
+        }
+
+        .no-button {
+            background-color: #6c757d;
+        }
+
+        .no-button:hover {
+            background-color: #5a6268;
+        }
+    </style>
+</head>
+<body>
+    <h1>Kullanıcı Ekle ve Sil</h1>
+
+    <!-- Kullanıcı ekleme formu -->
+    <form method="POST">
+        {% csrf_token %}
+        <label for="username">Kullanıcı Adı:</label>
+        <input type="text" name="username" id="username" required>
+        <label for="password">Şifre:</label>
+        <input type="password" name="password" id="password" required>
+        <button type="submit" name="action" value="add">Kullanıcı Ekle</button>
+    </form>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="success-message {% if message.tags %}{{ message.tags }}{% endif %}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="user-list">
+        <h2>Mevcut Kullanıcılar</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Kullanıcı Adı</th>
+                    <th>İşlem</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for username in users %}
+                    {% if username != 'admin' %}
+                        <tr>
+                            <td>{{ username }}</td>
+                            <td>
+                                <button type="button" class="delete-button" onclick="openModal('{{ username }}')">Sil</button>
+                            </td>
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <button class="back-button" onclick="window.location.href='/';">Ana Sayfaya Dön</button>
+
+    <!-- Silme işlemi için modal -->
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <p id="modalText">Bu kullanıcıyı silmek istediğinizden emin misiniz?</p>
+            <form id="deleteForm" method="POST" style="display: inline;">
+                {% csrf_token %}
+                <input type="hidden" name="username" id="deleteUsername" value="">
+                <div class="modal-buttons">
+                    <button type="submit" name="action" value="remove" class="yes-button">Evet</button>
+                    <button type="button" onclick="closeModal()" class="no-button">Hayır</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        var modal = document.getElementById("myModal");
+
+        function openModal(username) {
+            document.getElementById("modalText").textContent = username + " kullanıcısını silmek istediğinizden emin misiniz?";
+            document.getElementById("deleteUsername").value = username;
+            modal.style.display = "block";
+        }
+
+        function closeModal() {
+            modal.style.display = "none";
+        }
+
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+
+        // Mesajları otomatik olarak gizle
+        setTimeout(function() {
+            var messages = document.getElementsByClassName('success-message');
+            for(var i = 0; i < messages.length; i++) {
+                messages[i].style.display = 'none';
+            }
+        }, 3000);
+    </script>
+</body>
+</html>

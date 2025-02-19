@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ürün Tipi Düzenle</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f6f9;
+            color: #333;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #007bff;
+            margin-bottom: 40px;
+            font-size: 2.5rem;
+        }
+
+        form {
+            margin-bottom: 30px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            font-size: 1rem;
+            color: #333;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .back-link {
+            display: block;
+            margin-top: 30px;
+            text-align: center;
+            text-decoration: none;
+            color: #007bff;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 60px;
+            padding: 20px 0;
+            background-color: #343a40;
+            color: white;
+            font-size: 1rem;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Ürün Tipi Düzenle</h1>
+        <form method="POST">
+            <label for="code">Kodu:</label>
+            <input type="text" id="code" name="code" value="{{ product.code }}" required>
+
+            <label for="name">Adı:</label>
+            <input type="text" id="name" name="name" value="{{ product.name }}" required>
+
+            <button type="submit">Düzenle</button>
+        </form>
+        <a href="{{ url_for('product_types_page') }}" class="back-link">Ürün Tipleri Sayfasına Dön</a>
+    </div>
+
+    <footer>
+        © 2025 Tüm Hakları Saklıdır.
+    </footer>
+
+</body>
+</html>

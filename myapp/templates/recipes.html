@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reçeteler</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f6f9;
+            margin: 0;
+            padding: 0;
+        }
+        .header {
+            background-color: #007bff;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+            border-radius: 0 0 10px 10px;
+            margin-bottom: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+        .table-container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .admin-badge {
+            background-color: #dc3545;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            margin-left: 10px;
+        }
+        .input-group {
+            max-width: 300px;
+            margin-left: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>
+            Oluşturulmuş Reçeteler
+            {% if is_admin %}
+            <span class="admin-badge">Admin</span>
+            {% endif %}
+        </h1>
+    </div>
+
+    <div class="container">
+        <div class="action-buttons">
+            <button class="btn btn-secondary" onclick="window.location.href='{% url 'home' %}'">Ana Sayfa</button>
+            <button class="btn btn-primary" onclick="window.location.href='{% url 'create_recipe' %}'">+ Yeni Reçete</button>
+            <div class="input-group">
+                <input type="text" class="form-control" id="searchInput" placeholder="Ara...">
+                <button class="btn btn-info" type="button" onclick="filterRecipes()">Bul</button>
+            </div>
+        </div>
+
+        {% if messages %}
+        <div class="messages mb-4">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if recipes %}
+        <div class="table-container">
+            <table class="table table-bordered" id="recipeTable">
+                <thead>
+                    <tr>
+                        <th>PROJE KODU</th>
+                        <th>PROJE ADI</th>
+                        <th>REÇETE KODU</th>
+                        <th>REÇETE ADI</th>
+                        <th>TARİHİ</th>
+                        <th>SORUMLU</th>
+                        <th>ÜRÜN TİPİ</th>
+                        <th>SONUÇ</th>
+                        <th>NOTLAR</th>
+                        <th>İŞLEMLER</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for recipe in recipes %}
+                    <tr class="recipeRow">
+                        <td>{{ recipe.project_no }}</td>
+                        <td>{{ recipe.project_name }}</td>
+                        <td>{{ recipe.recipe_code }}</td>
+                        <td>{{ recipe.recipe_name }}</td>
+                        <td>{{ recipe.date|date:"d.m.Y" }}</td>
+                        <td>{{ recipe.responsible_person.name }}</td>
+                        <td>{{ recipe.product_type.name }}</td>
+                        <td>{{ recipe.result|default:"-" }}</td>
+                        <td>{{ recipe.notes|default:"-" }}</td>
+                        <td class="action-buttons-cell">
+                            {% if is_admin or recipe.responsible_person.user == user %}
+                            <button class="btn btn-warning btn-sm" onclick="window.location.href='{% url 'edit_recipe' recipe.id %}'">
+                                <i class="fas fa-edit"></i> Düzenle
+                            </button>
+                            <button class="btn btn-danger btn-sm" onclick="openDeleteModal({{ recipe.id }}, '{{ recipe.recipe_name|escapejs }}')">
+                                <i class="fas fa-trash"></i> Sil
+                            </button>
+                            <button class="btn btn-info btn-sm" onclick="copyRecipe({{ recipe.id }}, '{{ recipe.recipe_name|escapejs }}')">
+                                <i class="fas fa-copy"></i> Kopyala
+                            </button>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="alert alert-info" role="alert">
+            Henüz hiç reçete bulunmuyor.
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Modal for Deletion Confirmation -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">Silme Onayı</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Bu reçeteyi silmek istediğinizden emin misiniz?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Vazgeç</button>
+                    <form id="deleteForm" method="POST" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger" id="confirmDeleteButton">Sil</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // CSRF token fonksiyonu
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        // Reçete kopyalama fonksiyonu
+        function copyRecipe(recipeId, recipeName) {
+            const csrftoken = getCookie('csrftoken');
+            
+            fetch(`/get_recipe/${recipeId}/`)
+                .then(response => response.json())
+                .then(data => {
+                    const formData = new FormData();
+                    
+                    // Yeni reçete kodunu ve adını oluştur
+                    const recipeCodeParts = data.recipe_code.split('-');
+                    let lastPart = recipeCodeParts.pop();
+                    let newLastPart = (parseInt(lastPart, 10) + 1).toString().padStart(lastPart.length, '0');
+                    recipeCodeParts.push(newLastPart);
+                    const newRecipeCode = recipeCodeParts.join('-');
+                    
+                    const newRecipeName = data.recipe_name;  // Reçete adı copy değil, orijinal adıyla kalsın
+                    
+                    formData.append('date', new Date().toISOString().split('T')[0]);
+                    formData.append('project_no', data.project_no);
+                    formData.append('project_name', data.project_name);
+                    formData.append('recipe_code', newRecipeCode);
+                    formData.append('recipe_name', newRecipeName);
+                    formData.append('product_type', data.product_type);
+                    formData.append('result', data.result || '');
+                    formData.append('notes', data.notes || '');
+
+                    // Hammaddeleri ekle
+                    if (data.materials) {
+                        data.materials.forEach(material => {
+                            formData.append(`quantity_${material.material_id}`, material.quantity);
+                        });
+                    }
+
+                    return fetch('/create_recipe/', {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': csrftoken
+                        },
+                        body: formData
+                    });
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Kopyalama işlemi başarısız oldu');
+                    }
+                    window.location.reload();
+                })
+                .catch(error => {
+                    alert('Hata: ' + error.message);
+                });
+        }
+
+        // Silme modalı fonksiyonu
+        function openDeleteModal(recipeId, recipeName) {
+            const modal = document.getElementById('deleteModal');
+            const modalBody = modal.querySelector('.modal-body');
+            const deleteForm = document.getElementById('deleteForm');
+
+            // Modal içeriğini güncelle
+            modalBody.innerHTML = `"${recipeName}" reçetesini silmek istediğinizden emin misiniz?`;
+            
+            // Form action'ını ayarla
+            deleteForm.action = `/delete_recipe/${recipeId}/`;
+
+            // Modal'ı göster
+            const deleteModal = new bootstrap.Modal(modal);
+            deleteModal.show();
+
+            // Form submit işlemini yönet
+            deleteForm.onsubmit = function(e) {
+                e.preventDefault();
+                const csrftoken = getCookie('csrftoken');
+
+                fetch(this.action, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': csrftoken,
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        window.location.reload();
+                    } else {
+                        throw new Error('Silme işlemi başarısız oldu');
+                    }
+                })
+                .catch(error => {
+                    alert('Hata: ' + error.message);
+                });
+            };
+        }
+
+        // Arama fonksiyonu
+        function filterRecipes() {
+            const input = document.getElementById('searchInput').value.toLowerCase();
+            const rows = document.querySelectorAll('.recipeRow');
+            
+            rows.forEach(row => {
+                const columns = row.getElementsByTagName('td');
+                let matchFound = false;
+
+                for (let i = 0; i < columns.length - 1; i++) {
+                    const cellText = columns[i].textContent || columns[i].innerText;
+                    if (cellText.toLowerCase().includes(input)) {
+                        matchFound = true;
+                        break;
+                    }
+                }
+
+                row.style.display = matchFound ? '' : 'none';
+            });
+        }
+
+        // Enter tuşu ile arama yapma
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                filterRecipes();
+            }
+        });
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yeni Reçete Oluştur</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f9;
+            margin: 0;
+            padding: 0;
+        }
+        .header {
+            background-color: #007bff;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+            border-radius: 0 0 10px 10px;
+            margin-bottom: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .form-label {
+            font-weight: bold;
+        }
+        .btn-custom {
+            background-color: #007bff;
+            color: white;
+            border-radius: 5px;
+            padding: 10px;
+            width: 100%;
+        }
+        .btn-custom:hover {
+            background-color: #0056b3;
+        }
+        .btn-danger {
+            background-color: #ff0000;
+            border-color: #ff0000;
+        }
+        .btn-danger:hover {
+            background-color: #cc0000;
+            border-color: #cc0000;
+        }
+        .btn-secondary {
+            width: 100%;
+            margin-top: 10px;
+        }
+        .read-only-field {
+            background-color: #e9ecef;
+            cursor: not-allowed;
+        }
+        .btn-raw-material {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            width: 100%;
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .btn-raw-material:hover {
+            background-color: #218838;
+            color: white;
+        }
+        /* Hammadde tablosu için stiller */
+        .selected-materials-table {
+            margin-top: 10px;
+            width: 100%;
+        }
+        .selected-materials-table th,
+        .selected-materials-table td {
+            padding: 8px;
+            border: 1px solid #ddd;
+        }
+        .selected-materials-table thead {
+            background-color: #f8f9fa;
+        }
+        .material-search {
+            padding: 8px;
+            margin-bottom: 15px;
+            width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .materials-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .material-item {
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+            cursor: pointer;
+        }
+        .material-item:hover {
+            background-color: #f8f9fa;
+        }
+        .delete-material {
+            color: red;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Yeni Reçete Oluştur</h1>
+    </div>
+
+    <div class="container">
+        <div class="text-center mb-4 d-flex justify-content-between">
+            <button class="btn btn-secondary" style="width: 49%; margin: 0;" onclick="window.location.href='{% url 'recipes' %}'">Reçeteler Listesine Dön</button>
+            <button class="btn btn-danger" style="width: 49%; margin: 0;" onclick="window.location.href='{% url 'home' %}'">Ana Sayfaya Dön</button>
+        </div>
+
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <form action="{% url 'create_recipe' %}" method="POST">
+            {% csrf_token %}
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="date" class="form-label">Tarih</label>
+                    <input type="date" id="date" name="date" class="form-control" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="project_no" class="form-label">Proje Kodu</label>
+                    <select id="project_no" name="project_no" class="form-select" required>
+                        <option value="">Seçin...</option>
+                        {% for project in projects %}
+                            <option value="{{ project.project_no }}" data-name="{{ project.project_name }}">{{ project.project_no }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="project_name" class="form-label">Proje Adı</label>
+                    <input type="text" id="project_name" name="project_name" class="form-control read-only-field" readonly>
+                </div>
+                <div class="col-md-6">
+                    <label for="recipe_code" class="form-label">Reçete Kodu</label>
+                    <input type="text" id="recipe_code" name="recipe_code" class="form-control" required>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="recipe_name" class="form-label">Reçete Adı</label>
+                    <input type="text" id="recipe_name" name="recipe_name" class="form-control" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="responsible_person" class="form-label">Sorumlu</label>
+                    <input type="text" class="form-control read-only-field" value="{{ responsible_person.name }}" readonly>
+                    <input type="hidden" name="responsible_person" value="{{ responsible_person.id }}">
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="product_type" class="form-label">Ürün Tipi</label>
+                    <select id="product_type" name="product_type" class="form-control" required>
+                        <option value="">Lütfen ürün tipi seçin</option>
+                        {% for type in product_types %}
+                            <option value="{{ type.id }}">{{ type.code }} - {{ type.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="result" class="form-label">Sonuç</label>
+                    <input type="text" id="result" name="result" class="form-control">
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="notes" class="form-label">Notlar</label>
+                <textarea id="notes" name="notes" class="form-control" rows="2"></textarea>
+            </div>
+            
+            <!-- Hammadde Butonu -->
+            <div class="mb-3">
+                <button type="button" class="btn btn-raw-material" data-bs-toggle="modal" data-bs-target="#materialModal">
+                    Hammadde Ekle
+                </button>
+            </div>
+
+            <!-- Seçilen Hammaddeler Tablosu -->
+            <div class="mb-3">
+                <table class="selected-materials-table" id="selectedMaterialsTable" style="display: none;">
+                    <thead>
+                        <tr>
+                            <th>Stok Kodu</th>
+                            <th>Hammadde Adı</th>
+                            <th>Inc</th>
+                            <th>Miktar</th>
+                            <th>İşlem</th>
+                        </tr>
+                    </thead>
+                    <tbody id="selectedMaterialsList">
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="text-center">
+                <button type="submit" class="btn btn-custom">Reçete Oluştur</button>
+            </div>
+        </form>
+
+        <!-- Hammadde Seçme Modalı -->
+        <div class="modal fade" id="materialModal" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Hammadde Seç</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="text" id="materialSearch" class="material-search" placeholder="Hammadde ara...">
+                        <div class="materials-list" id="materialsList">
+                            <!-- Hammaddeler AJAX ile yüklenecek -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tarih ayarlama
+            var today = new Date();
+            var dd = String(today.getDate()).padStart(2, '0');
+            var mm = String(today.getMonth() + 1).padStart(2, '0');
+            var yyyy = today.getFullYear();
+            today = yyyy + '-' + mm + '-' + dd;
+            document.getElementById('date').value = today;
+
+            // Proje Kodu seçildiğinde Proje Adını otomatik doldur
+            document.getElementById('project_no').addEventListener('change', function() {
+                const selectedOption = this.options[this.selectedIndex];
+                const projectName = selectedOption.getAttribute('data-name');
+                document.getElementById('project_name').value = projectName;
+            });
+
+            // Hammadde arama ve seçme işlemleri
+            const materialSearch = document.getElementById('materialSearch');
+            const materialsList = document.getElementById('materialsList');
+            const selectedMaterialsTable = document.getElementById('selectedMaterialsTable');
+            const selectedMaterialsList = document.getElementById('selectedMaterialsList');
+            let materials = []; // Tüm hammaddeleri tutacak array
+
+            // Hammaddeleri yükle
+            fetch('/raw_materials/api/list/') // Bu endpoint'i backend'de oluşturmanız gerekecek
+                .then(response => response.json())
+                .then(data => {
+                    materials = data;
+                    displayMaterials(materials);
+                });
+
+            // Arama işlemi
+            materialSearch.addEventListener('input', function() {
+                const searchText = this.value.toLowerCase();
+                const filteredMaterials = materials.filter(material => 
+                    material.stock_code.toLowerCase().includes(searchText) ||
+                    material.material_name.toLowerCase().includes(searchText)
+                );
+                displayMaterials(filteredMaterials);
+            });
+
+            // Hammaddeleri listele
+            function displayMaterials(materialsToShow) {
+                materialsList.innerHTML = materialsToShow.map(material => `
+                    <div class="material-item" data-material='${JSON.stringify(material)}'>
+                        ${material.stock_code} - ${material.material_name}
+                    </div>
+                `).join('');
+
+                // Hammadde seçme olayını ekle
+                document.querySelectorAll('.material-item').forEach(item => {
+                    item.addEventListener('click', function() {
+                        const material = JSON.parse(this.dataset.material);
+                        addMaterialToSelection(material);
+                        selectedMaterialsTable.style.display = 'table';
+                        bootstrap.Modal.getInstance(document.getElementById('materialModal')).hide();
+                    });
+                });
+            }
+
+            // Seçilen hammaddeyi listeye ekle
+            function addMaterialToSelection(material) {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${material.stock_code}</td>
+                    <td>${material.material_name}</td>
+                    <td>${material.inc}</td>
+                    <td><input type="number" class="form-control" name="quantity_${material.id}" required></td>
+                    <td><span class="delete-material">❌</span></td>
+                `;
+                
+                // Silme işlemi
+                row.querySelector('.delete-material').addEventListener('click', function() {
+                    row.remove();
+                    if (selectedMaterialsList.children.length === 0) {
+                        selectedMaterialsTable.style.display = 'none';
+                    }
+                });
+
+                selectedMaterialsList.appendChild(row);
+            }
+        });
+    </script>
+</body>
+</html>

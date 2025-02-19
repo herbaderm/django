@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arşiv</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 80%;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f1f1f1;
+        }
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+        .notes {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 200px;
+        }
+        .actions {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .actions button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .actions button:hover {
+            background-color: #0056b3;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding-top: 60px;
+        }
+        .modal-content {
+            background-color: #fff;
+            margin: 5% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 80%;
+            max-width: 400px;
+            text-align: center;
+        }
+        .close {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            float: right;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .btn {
+            padding: 12px 20px;
+            margin: 5px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+        }
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+        .delete-link {
+            display: inline-block;
+            padding: 6px 12px;
+            background-color: #dc3545;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        .delete-link:hover {
+            background-color: #c82333;
+            text-decoration: none;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Arşivlenmiş Projeler</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>Başlangıç Tarihi</th>
+                    <th>Proje No</th>
+                    <th>Proje Adı</th>
+                    <th>Reçete Kodu</th>
+                    <th>Reçete Adı</th>
+                    <th>Proje Sorumlusu</th>
+                    <th>Notlar</th>
+                    <th>İşlem</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for project in archived_projects %}
+                <tr>
+                    <td>{{ project.start_date }}</td>
+                    <td>{{ project.project_no }}</td>
+                    <td>{{ project.project_name }}</td>
+                    <td>{{ project.recipe_code }}</td>
+                    <td>{{ project.recipe_name }}</td>
+                    <td>{{ project.responsible_person }}</td>
+                    <td class="notes">{{ project.notes }}</td>
+                    <td>
+                        <a href="#" class="delete-link" onclick="showModal('{% url 'unarchive_project' project_id=project.id %}')">Geri Al</a>
+                        {% if request.user.is_superuser %}
+                            <a href="#" class="delete-link" onclick="showDeleteModal('{% url 'delete_archived_project' project_id=project.id %}')">Sil</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="8" style="text-align:center;">Arşivli proje bulunmamaktadır.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="actions">
+            <a href="{% url 'home' %}"><button>Ana Sayfaya Dön</button></a>
+        </div>
+    </div>
+
+    <!-- Geri Al Modal -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <p>Bu projeyi geri almak istediğinizden emin misiniz?</p>
+            <button id="confirmDelete" class="btn btn-danger">Evet, Geri Al</button>
+            <button class="btn btn-secondary" onclick="document.getElementById('deleteModal').style.display='none'">Hayır, Vazgeç</button>
+        </div>
+    </div>
+
+    <!-- Sil Modal -->
+    <div id="confirmDeleteModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <p>Bu projeyi kalıcı olarak silmek istediğinizden emin misiniz?</p>
+            <button id="confirmDeletePermanent" class="btn btn-danger">Evet, Sil</button>
+            <button class="btn btn-secondary" onclick="document.getElementById('confirmDeleteModal').style.display='none'">Hayır, Vazgeç</button>
+        </div>
+    </div>
+
+    <script>
+        let currentUrl = '';
+        let deleteUrl = '';
+
+        function showModal(url) {
+            currentUrl = url;
+            document.getElementById('deleteModal').style.display = 'block';
+        }
+
+        function showDeleteModal(url) {
+            deleteUrl = url;
+            document.getElementById('confirmDeleteModal').style.display = 'block';
+        }
+
+        // Modal'ı kapatma işlemleri
+        document.querySelectorAll('.close').forEach(function(element) {
+            element.onclick = function() {
+                document.getElementById('deleteModal').style.display = 'none';
+                document.getElementById('confirmDeleteModal').style.display = 'none';
+            }
+        });
+
+        window.onclick = function(event) {
+            if (event.target == document.getElementById('deleteModal')) {
+                document.getElementById('deleteModal').style.display = 'none';
+            }
+            if (event.target == document.getElementById('confirmDeleteModal')) {
+                document.getElementById('confirmDeleteModal').style.display = 'none';
+            }
+        }
+
+        document.getElementById('confirmDelete').onclick = function() {
+            if (currentUrl) {
+                window.location.href = currentUrl;
+            }
+        }
+
+        document.getElementById('confirmDeletePermanent').onclick = function() {
+            if (deleteUrl) {
+                window.location.href = deleteUrl;
+            }
+        }
+
+        // ESC tuşu ile modal'ı kapatma
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                document.getElementById('deleteModal').style.display = 'none';
+                document.getElementById('confirmDeleteModal').style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
