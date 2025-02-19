@@ -7,3 +7,6 @@ python manage.py collectstatic --noinput
 
 # Apply database migrations
 python manage.py migrate --noinput
+
+# Create superuser
+python manage.py createsuperuser --noinput || true
