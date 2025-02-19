@@ -56,13 +56,45 @@ TEMPLATES = [
 WSGI_APPLICATION = 'myproject.wsgi.application'
 
 # Database
-DATABASES = {
-    'default': dj_database_url.config(
-        default='sqlite:///'+os.path.join(BASE_DIR, 'db.sqlite3'),
-        conn_max_age=600,
-        ssl_require=True,  # SSL sertifikası için
-    )
-}
+# Render için PostgreSQL, yerel geliştirme için SQLite
+if 'DATABASE_URL' in os.environ:
+    DATABASES = {
+        'default': dj_database_url.config(
+            conn_max_age=600,
+            conn_health_checks=True,
+            ssl_require=True,
+        )
+    }
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
+
+# Password validation
+AUTH_PASSWORD_VALIDATORS = [
+    {
+        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+    },
+]
+
+# Internationalization
+LANGUAGE_CODE = 'tr-tr'
+TIME_ZONE = 'Europe/Istanbul'
+USE_I18N = True
+USE_L10N = True
+USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
@@ -80,3 +112,39 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'login'
+
+# Session settings
+SESSION_COOKIE_AGE = 86400  # 1 gün
+SESSION_COOKIE_SECURE = True  # HTTPS için
+CSRF_COOKIE_SECURE = True  # HTTPS için
+
+# Security settings
+SECURE_SSL_REDIRECT = True  # HTTPS yönlendirmesi
+SECURE_HSTS_SECONDS = 31536000  # 1 yıl
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
+
+# Email settings (gerekirse)
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# Logging configuration
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO',
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+            'propagate': False,
+        },
+    },
+}
