@@ -5,6 +5,10 @@ set -o nounset
 
 echo "🔄 Starting build process..."
 
+# Environment variable'ları ayarla
+export DJANGO_SETTINGS_MODULE=myproject.settings
+export PYTHONPATH=/opt/render/project/src
+
 # Python sürümünü kontrol et
 python --version
 
