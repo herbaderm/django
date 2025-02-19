@@ -6,11 +6,10 @@ import dj_database_url
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
-# Burada kendi mevcut SECRET_KEY'inizi kullanın
-SECRET_KEY = 'your-existing-secret-key'
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'your-existing-secret-key')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = os.environ.get('DJANGO_DEBUG', 'False') == 'True'
 
 ALLOWED_HOSTS = ['.onrender.com', 'localhost', '127.0.0.1']
 
@@ -37,8 +36,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-# Kendi projenizin adını kullanın (örnek: 'myproject.urls')
-ROOT_URLCONF = 'your_project.urls'
+ROOT_URLCONF = 'myproject.urls'  # Projenizin adı 'myproject'
 
 TEMPLATES = [
     {
@@ -56,13 +54,11 @@ TEMPLATES = [
     },
 ]
 
-# Kendi projenizin adını kullanın (örnek: 'myproject.wsgi.application')
-WSGI_APPLICATION = 'your_project.wsgi.application'
+WSGI_APPLICATION = 'myproject.wsgi.application'  # Projenizin adı 'myproject'
 
-# Database - Önce SQLite kullanın, daha sonra Render'da PostgreSQL'e geçiş yapacağız
+# Database
 DATABASES = {
     'default': dj_database_url.config(default='sqlite:///db.sqlite3', conn_max_age=600)
-}
 }
 
 # Password validation
@@ -99,7 +95,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Security Settings - Render'da deploy ederken bu ayarları aktif edeceğiz
+# Security Settings
 if not DEBUG:
     SECURE_SSL_REDIRECT = True
     SESSION_COOKIE_SECURE = True
