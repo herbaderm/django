@@ -55,6 +55,10 @@ def raw_materials_api_list(request):
 
 # Authentication Views
 def login_view(request):
+    # Eğer kullanıcı zaten giriş yapmışsa ana sayfaya yönlendir
+    if request.user.is_authenticated:
+        return redirect('home')  # Ana sayfa URL'sine yönlendir
+
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
@@ -65,7 +69,7 @@ def login_view(request):
             login(request, user)
             request.session['username'] = username
             messages.success(request, f'Hoş geldiniz, {username}!')
-            return redirect('home')
+            return redirect('home')  # Ana sayfaya yönlendir
         else:
             messages.error(request, 'Geçersiz kullanıcı adı veya şifre!')
             return redirect('login')
@@ -75,7 +79,7 @@ def login_view(request):
 def logout_view(request):
     logout(request)
     request.session.flush()
-    return redirect('home')
+    return redirect('login')
 
 # Basic Page Views
 def home(request):
