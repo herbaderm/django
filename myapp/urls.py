@@ -2,42 +2,46 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    # Authentication & Core Pages
-    path('', views.login_view, name='login'),  # Ana sayfa login
-    path('home/', views.home, name='home'),    # Dashboard/Ana sayfa
+    # Ana sayfalar
+    path('', views.login_view, name='login'),
+    path('home/', views.home, name='home'),
     path('logout/', views.logout_view, name='logout'),
     path('about/', views.about, name='about'),
     path('contact/', views.contact, name='contact'),
     
-    # Responsible People Management
-    path('responsible-people/', views.responsible_people_view, name='responsible_people'),
-    path('responsible-people/delete/<int:person_id>/', views.delete_person, name='delete_person'),
+    # Kullanıcı işlemleri
+    path('login/', views.login_view, name='login'),
+    path('logout/', views.logout_view, name='logout'),
     
-    # Raw Materials Management
-    path('raw-materials/', views.raw_materials_view, name='raw_materials'),
-    path('raw-materials/delete/<int:material_id>/', views.delete_raw_material, name='delete_raw_material'),
-    path('raw-materials/api/list/', views.raw_materials_api_list, name='raw_materials_api_list'),
+    # Sorumlu kişiler
+    path('responsible_people/', views.responsible_people_view, name='responsible_people'),
+    path('delete_person/<int:person_id>/', views.delete_person, name='delete_person'),
     
-    # Product Types Management
-    path('product-types/', views.product_types_view, name='product_types'),
-    path('product-types/edit/<int:product_id>/', views.edit_product_type, name='edit_product_type'),
-    path('product-types/delete/<int:type_id>/', views.delete_product_type, name='delete_product_type'),
+    # Hammaddeler
+    path('raw_materials/', views.raw_materials_view, name='raw_materials'),
+    path('delete_raw_material/<int:material_id>/', views.delete_raw_material, name='delete_raw_material'),
+    path('raw_materials/api/list/', views.raw_materials_api_list, name='raw_materials_api_list'),
     
-    # Projects Management
+    # Ürün tipleri
+    path('product_types/', views.product_types_view, name='product_types'),
+    path('edit_product_type/<int:product_id>/', views.edit_product_type, name='edit_product_type'),
+    path('delete_product_type/<int:type_id>/', views.delete_product_type, name='delete_product_type'),
+    
+    # Projeler
     path('projects/', views.projects_view, name='projects'),
-    path('projects/add/', views.add_project_view, name='add_project'),
-    path('projects/edit/<int:project_id>/', views.edit_project_view, name='edit_project'),
-    path('projects/archive/<int:project_id>/', views.archive_project_view, name='archive_project'),
-    path('projects/unarchive/<int:project_id>/', views.unarchive_project_view, name='unarchive_project'),
+    path('add_project/', views.add_project_view, name='add_project'),
+    path('edit_project/<int:project_id>/', views.edit_project_view, name='edit_project'),
+    path('archive_project/<int:project_id>/', views.archive_project_view, name='archive_project'),
+    path('unarchive_project/<int:project_id>/', views.unarchive_project_view, name='unarchive_project'),
 
-    # Recipes Management
+    # Reçeteler
     path('recipes/', views.recipes_view, name='recipes'),
-    path('recipes/create/', views.create_recipe_view, name='create_recipe'),
-    path('recipes/delete/<int:recipe_id>/', views.delete_recipe_view, name='delete_recipe'),
-    path('recipes/get/<int:recipe_id>/', views.get_recipe_view, name='get_recipe'),
-    path('recipes/edit/<int:recipe_id>/', views.edit_recipe_view, name='edit_recipe'),
+    path('create_recipe/', views.create_recipe_view, name='create_recipe'),
+    path('delete_recipe/<int:recipe_id>/', views.delete_recipe_view, name='delete_recipe'),
+    path('get_recipe/<int:recipe_id>/', views.get_recipe_view, name='get_recipe'),
+    path('edit_recipe/<int:recipe_id>/', views.edit_recipe_view, name='edit_recipe'),
 
-    # Archive Management
+    # Arşiv
     path('archive/', views.archive_view, name='archive'),
-    path('archive/delete/<int:project_id>/', views.delete_archived_project, name='delete_archived_project'),
+    path('delete_archived_project/<int:project_id>/', views.delete_archived_project, name='delete_archived_project'),
 ]
