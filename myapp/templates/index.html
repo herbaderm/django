@@ -4,237 +4,303 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OpenLab</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>OpenLab | Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #2563eb;
-            --secondary-color: #1e40af;
-            --accent-color: #3b82f6;
-            --background-color: #f8fafc;
-            --text-color: #1e293b;
-            --card-bg: rgba(255, 255, 255, 0.95);
-            --transition: all 0.3s ease;
+            --primary-color: #6366f1;
+            --secondary-color: #4f46e5;
+            --accent-color: #818cf8;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --text-color: #0f172a;
+            --text-light: #64748b;
+            --bg-dark: #f8fafc; /* Arka plan rengi açık gri tonu */
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --card-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
         }
 
         body {
-            font-family: 'Poppins', sans-serif;
-            background-image: url("{% static 'images/background.jpg' %}");
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            background-repeat: no-repeat;
+            font-family: 'Space Grotesk', sans-serif;
             margin: 0;
             padding: 0;
-            color: var(--text-color);
-            text-align: center;
+            background: var(--bg-dark); /* Arka plan rengi */
+            color: var(--text-color); /* Yazı rengi koyu */
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
+            overflow-x: hidden;
         }
 
-        body::before {
-            content: '';
+        .particles {
             position: fixed;
             top: 0;
             left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(
-                135deg,
-                rgba(255, 255, 255, 0.1) 0%,
-                rgba(255, 255, 255, 0.2) 100%
-            );
-            backdrop-filter: blur(10px);
-            z-index: -1;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
         }
 
-        h1 {
-            color: var(--primary-color);
-            margin: 2rem 0;
-            font-size: 3rem;
+        .container {
+            position: relative;
+            z-index: 1;
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.9); /* Daha açık bir arka plan */
+            backdrop-filter: blur(10px);
+            border-radius: 1rem;
+            border: 1px solid rgba(0, 0, 0, 0.1); /* Kenarlık rengi */
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo-section h1 {
+            font-size: 2rem;
+            margin: 0;
+            background: linear-gradient(to right, var(--text-color), var(--accent-color)); /* Yazı rengi koyu */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
             font-weight: 700;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
-            letter-spacing: -1px;
+        }
+
+        .user-section {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .datetime-display {
+            background: rgba(255, 255, 255, 0.9); /* Daha açık bir arka plan */
+            padding: 0.75rem 1.25rem;
+            border-radius: 0.75rem;
+            font-size: 0.9rem;
+            border: 1px solid rgba(0, 0, 0, 0.1); /* Kenarlık rengi */
+            color: var(--text-color); /* Yazı rengi koyu */
+        }
+
+        .user-info {
+            background: rgba(255, 255, 255, 0.9); /* Daha açık bir arka plan */
+            padding: 1rem 1.5rem;
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            border: 1px solid rgba(0, 0, 0, 0.1); /* Kenarlık rengi */
+            color: var(--text-color); /* Yazı rengi koyu */
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--accent-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: white;
         }
 
         .menu-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 1.5rem;
-            max-width: 1200px;
-            margin: 2rem auto;
-            padding: 0 1.5rem;
+            margin-top: 2rem;
         }
 
         .menu-item {
-            background: var(--card-bg);
-            padding: 1.25rem;
+            position: relative;
+            background: rgba(255, 255, 255, 0.9); /* Daha açık bir arka plan */
+            backdrop-filter: blur(10px);
+            padding: 2rem;
             border-radius: 1rem;
-            font-size: 1.1rem;
-            transition: var(--transition);
             text-decoration: none;
-            color: var(--primary-color);
-            font-weight: 500;
-            border: 2px solid transparent;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
-                       0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 80px;
+            color: var(--text-color); /* Yazı rengi koyu */
+            border: 1px solid rgba(0, 0, 0, 0.1); /* Kenarlık rengi */
+            transition: var(--transition);
+            overflow: hidden;
+        }
+
+        .menu-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent, rgba(0, 0, 0, 0.1), transparent); /* Animasyon rengi siyah */
+            transform: translateX(-100%);
+            transition: var(--transition);
+        }
+
+        .menu-item:hover::before {
+            transform: translateX(100%);
         }
 
         .menu-item:hover {
-            transform: translateY(-4px);
-            background: var(--primary-color);
-            color: white;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
-                       0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transform: translateY(-5px);
+            border-color: var(--accent-color);
+            box-shadow: 0 10px 20px rgba(99, 102, 241, 0.2);
         }
 
-        .user-info {
-            background: var(--card-bg);
+        .menu-item i {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--accent-color);
+        }
+
+        .menu-item h3 {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+
+        .menu-item p {
+            margin: 0.5rem 0 0;
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        footer {
+            margin-top: 4rem;
+            text-align: center;
             padding: 2rem;
+            background: rgba(255, 255, 255, 0.9); /* Daha açık bir arka plan */
+            backdrop-filter: blur(10px);
             border-radius: 1rem;
-            margin: 2rem auto;
-            max-width: 400px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(0, 0, 0, 0.1); /* Kenarlık rengi */
+            color: var(--text-color); /* Yazı rengi koyu */
         }
 
-        .user-info h2 {
-            font-size: 1.5rem;
-            color: var(--primary-color);
-            margin-bottom: 1.5rem;
-        }
-
-        .user-info a {
-            display: inline-block;
-            padding: 0.75rem 2rem;
-            background: var(--accent-color);
+        .logout-btn {
+            background: var(--danger-color);
             color: white;
+            padding: 0.5rem 1.5rem;
             border-radius: 0.5rem;
-            font-weight: 500;
             text-decoration: none;
             transition: var(--transition);
         }
 
-        .user-info a:hover {
-            background: var(--secondary-color);
+        .logout-btn:hover {
+            background: #dc2626;
             transform: translateY(-2px);
         }
 
-        .datetime-display {
-            position: fixed;
-            top: 1rem;
-            right: 1rem;
-            background: var(--card-bg);
-            padding: 0.75rem 1.25rem;
-            border-radius: 0.75rem;
-            font-size: 0.9rem;
-            color: var(--text-color);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            animation: slideIn 0.5s ease-out;
-        }
-
-        footer {
-            background: linear-gradient(
-                to right,
-                var(--primary-color),
-                var(--secondary-color)
-            );
-            margin-top: auto;
-            padding: 1.5rem 0;
-            color: white;
-            font-size: 0.9rem;
-        }
-
-        @keyframes slideIn {
-            from {
-                transform: translateX(100px);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-
         @media (max-width: 768px) {
+            .dashboard-header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .user-section {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
             .menu-container {
                 grid-template-columns: 1fr;
-                padding: 0 1rem;
             }
-
-            h1 {
-                font-size: 2rem;
-            }
-
-            .datetime-display {
-                position: static;
-                margin: 1rem auto;
-                max-width: 80%;
-            }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            * {
-                animation: none !important;
-                transition: none !important;
-            }
-        }
-
-        /* Glass morphism effect for cards */
-        .menu-item, .user-info, .datetime-display {
-            backdrop-filter: blur(16px) saturate(180%);
-            -webkit-backdrop-filter: blur(16px) saturate(180%);
-            background-color: rgba(255, 255, 255, 0.75);
-            border: 1px solid rgba(209, 213, 219, 0.3);
         }
     </style>
 </head>
 <body>
-    <!-- Datetime Display -->
-    <div class="datetime-display" id="currentDateTime">
-        Tarih ve Saat: 2025-02-14 13:57:44
+    <div class="particles" id="particles-js"></div>
+    
+    <div class="container">
+        <header class="dashboard-header">
+            <div class="logo-section">
+                <h1>OpenLab</h1>
+                <div class="datetime-display" id="currentDateTime"></div>
+            </div>
+            
+            <div class="user-section">
+                {% if request.session.username %}
+                <div class="user-info">
+                    <div class="user-avatar">
+                        {{ request.session.username|make_list|first|upper }}
+                    </div>
+                    <div>
+                        <h3 style="margin: 0">{{ request.session.username }}</h3>
+                        <small>{{ user.is_superuser|yesno:"Admin,Kullanıcı" }}</small>
+                    </div>
+                </div>
+                <a href="{% url 'logout' %}" class="logout-btn">
+                    <i class='bx bx-log-out'></i> Çıkış Yap
+                </a>
+                {% else %}
+                <a href="{% url 'login' %}" class="logout-btn">Giriş Yap</a>
+                {% endif %}
+            </div>
+        </header>
+
+        <div class="menu-container">
+            {% if user.is_superuser %}
+            <a class="menu-item" href="{% url 'responsible_people' %}">
+                <i class='bx bx-user-circle'></i>
+                <h3>Sorumlu Kişiler</h3>
+                <p>Kullanıcı yönetimi ve yetkiler</p>
+            </a>
+            <a class="menu-item" href="{% url 'product_types' %}">
+                <i class='bx bx-package'></i>
+                <h3>Ürün Tipleri</h3>
+                <p>Ürün kategorileri ve özellikleri</p>
+            </a>
+            <a class="menu-item" href="{% url 'add_project' %}">
+                <i class='bx bx-plus-circle'></i>
+                <h3>Proje Ekle</h3>
+                <p>Yeni proje oluştur ve yönet</p>
+            </a>
+            <a class="menu-item" href="{% url 'archive' %}">
+                <i class='bx bx-archive'></i>
+                <h3>Arşiv</h3>
+                <p>Tamamlanan projeler ve geçmiş</p>
+            </a>
+            {% endif %}
+            
+            <a class="menu-item" href="{% url 'raw_materials' %}">
+                <i class='bx bx-cube'></i>
+                <h3>Hammaddeler</h3>
+                <p>Stok ve malzeme yönetimi</p>
+            </a>
+            <a class="menu-item" href="{% url 'projects' %}">
+                <i class='bx bx-folder'></i>
+                <h3>Projeler</h3>
+                <p>Aktif projeler ve detaylar</p>
+            </a>
+            <a class="menu-item" href="{% url 'recipes' %}">
+                <i class='bx bx-book-content'></i>
+                <h3>Oluşturulmuş Reçeteler</h3>
+                <p>Mevcut reçeteleri görüntüle</p>
+            </a>
+            <a class="menu-item" href="{% url 'create_recipe' %}">
+                <i class='bx bx-plus-medical'></i>
+                <h3>Reçete Oluştur</h3>
+                <p>Yeni reçete ekle ve düzenle</p>
+            </a>
+        </div>
+
+        <footer>
+            <p>© 2025 OpenLab | Yeni Nesil Laboratuvar Yönetim Sistemi</p>
+        </footer>
     </div>
 
-    <h1>OpenLab</h1>
-
-    {% if request.session.username %}
-    <div class="user-info">
-        <h2>Hoşgeldiniz, {{ request.session.username }}!</h2>
-        <a href="{% url 'logout' %}">Çıkış Yap</a>
-    </div>
-    {% else %}
-    <div class="user-info">
-        <h2>Giriş Yapmadınız!</h2>
-        <a href="{% url 'login' %}">Giriş Yap</a>
-    </div>
-    {% endif %}
-
-    <div class="menu-container">
-        {% if user.is_superuser %}  
-        <!-- Sadece admin görebilecek -->
-        <a class="menu-item" href="/responsible_people">Sorumlu Kişiler</a>
-        <a class="menu-item" href="/product_types">Ürün Tipleri</a>
-        <a class="menu-item" href="/add_project">Proje Ekle</a>
-        <a class="menu-item" href="/archive">Arşiv</a>
-        {% endif %}
-        
-        <!-- Herkes görebilecek -->
-        <a class="menu-item" href="/raw_materials">Hammaddeler</a>
-        <a class="menu-item" href="/projects">Projeler</a>
-        <a class="menu-item" href="/recipes">Oluşturulmuş Reçeteler</a>
-        <a class="menu-item" href="/create_recipe">Reçete Oluştur</a>
-    </div>
-
-    <footer>
-        © 2025 Tüm Hakları Saklıdır.
-    </footer>
-
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
     <script>
+        // Datetime güncelleme
         function updateDateTime() {
             const now = new Date();
             const formatted = now.toLocaleString('tr-TR', {
@@ -246,12 +312,47 @@
                 second: '2-digit',
                 hour12: false
             });
-            document.getElementById('currentDateTime').textContent = 'Tarih ve Saat: ' + formatted;
+            document.getElementById('currentDateTime').textContent = formatted;
         }
 
-        // Update datetime every second
         updateDateTime();
         setInterval(updateDateTime, 1000);
+
+        // Particles.js konfigürasyonu
+        particlesJS('particles-js', {
+            particles: {
+                number: { value: 80, density: { enable: true, value_area: 800 } },
+                color: { value: '#000000' }, /* Nokta rengi siyah */
+                shape: { type: 'circle' },
+                opacity: { value: 0.5, random: false },
+                size: { value: 3, random: true },
+                line_linked: {
+                    enable: true,
+                    distance: 150,
+                    color: '#000000', /* Çizgi rengi siyah */
+                    opacity: 0.2,
+                    width: 1
+                },
+                move: {
+                    enable: true,
+                    speed: 2,
+                    direction: 'none',
+                    random: false,
+                    straight: false,
+                    out_mode: 'out',
+                    bounce: false
+                }
+            },
+            interactivity: {
+                detect_on: 'canvas',
+                events: {
+                    onhover: { enable: true, mode: 'repulse' },
+                    onclick: { enable: true, mode: 'push' },
+                    resize: true
+                }
+            },
+            retina_detect: true
+        });
     </script>
 </body>
 </html>
